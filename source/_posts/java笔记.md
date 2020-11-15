@@ -11,3 +11,6 @@ categories: java
 
 [toc]
 
+### 数据类型
+
+![image-20201115230836668](java笔记/image-20201115230836668.png)
