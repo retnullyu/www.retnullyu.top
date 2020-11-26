@@ -127,6 +127,22 @@ categories: java
 >
 > 字符串是引用类型：
 
+#### 多维数据
+
+> ***二维数组的定义和输出***
+>
+> ```java
+>         int[][] ns = {{1,2,3},{4,5,6}};
+>         for (int[] arr:ns){
+>             for (int a : arr){
+>                 System.out.println(a);
+>             }
+>         }
+> 		 System.out.println(Arrays.deepToString(ns));//打印多维数组
+> ```
+>
+> 
+
 ### 输入输出
 
 > `println:print line`:输出并换行
@@ -245,3 +261,249 @@ categories: java
 > >     }
 > > 
 > > ```
+
+### 命令行参数
+
+> ```java
+> public class Main {
+>     public static void main(String[] args) {//字符串类型的参数 参数第一个就是参数
+>         for (String arg : args) {
+>             System.out.println(arg);
+>         }
+>     }
+> }
+> ```
+>
+> 
+
+----
+
+---
+
+
+
+## java面向对象
+
+
+
+### 可变参数
+
+>
+>
+>```java
+>    class person{
+>        private String name;
+>        private int age;
+>        
+>        public void setNameAndAgeg(String...names){ //数据类型...数组名
+>            this.name = names[0]; //names是数组
+>            System.out.println(this.name);
+>        }
+>        
+>    }
+>    person test =  new person();
+>    test.setNameAndAgeg("你好呀");
+>    
+>    }
+>```
+>
+>
+
+### 参数绑定
+
+>调用方法时候如果传入的是引用数据类型,修改数组会引起里面赋值的变化
+
+### 构造方法
+
+> ```java
+>         public person(){  //可以构造多个构造方法 编译器可以自动识别
+> 
+>         }
+>         public person(String name,int age){
+>             this.name = name;
+>             this.age = age;
+>         }
+> ```
+>
+> 
+
+### 方法重载
+
+> * 一般重载的返回类型相同
+> * 重载用的都是同样的函数名
+> * 多个构造方法就是重载的一种表现
+
+### 继承
+
+> * 继承的关键字为`extends`
+>
+> * 继承中无法在子类中定义和父类相同的字段
+>
+> * 继承中无法访问父类的`private`所以建议用你`protected`
+>
+> * 继承中会在子类的构造函数执行之前自己调用`super()`如果木有定义无参数的构造方法,编译出错
+>
+>   ```java
+>   public student(int score,int age,String name){
+>               super(name,age);//调用父类的构造方法
+>               this.score = score;
+>           }
+>   ```
+>
+>   
+
+#### 阻止继承
+
+> ***sealed和permits****
+>
+> > ```public sealed class Shape permits Rect, Circle, Triangle ```
+> >
+> > 只有```Rect, Circle, Triangle ```可以继承`shape`
+> >
+> > 
+
+#### 向上转型
+
+>student继承自person,person继承自object
+>
+>所以可以用`person s = new student()`和`object o = new person()`,因为student继承自person自然就有person的所有方法和字段
+
+#### 向下转型
+
+> 通常会失败
+
+###  多态
+
+> * 调用父类被复写的方法用`super.`
+>
+> * 用`final`标记的方法不能被子类复写
+>
+>   `public final String hello()`
+>
+> 多态运行是运行的复写方法由new时候的类所定义,并不会因为父类的引用类型所影响
+
+
+
+### 抽象类
+
+>抽象类的背景是:对于多态,父类的方法可以不用定义,但是不能删除父类方法的定义.为了让子类去复写.
+>
+>```java
+>abstract class person{
+>            public abstract void run(); //方法和类都必须定义为抽象类
+>        }
+>```
+>
+>* 抽象类不可以实例化
+>* 抽象类中的抽象方法必须在子类中复写才有作用
+
+### 接口
+
+> ≈没有字段的抽象类
+>
+> ***java中一个类只能继承一个类,但是可以继承多个接口***
+>
+> ```java
+>         interface test{  //interface定义接口
+>             void run();
+>             //接口可以有静态字段 只能是public static final 可以省略直接写
+>             int MAN = 1;
+> 
+>         }
+>         class studnet implements test{  //用implements继承接口
+>             @Override
+>             public void run() {
+>                 
+>             }
+>         }
+>         interface test2 extends test{
+>             
+>         }//接口的继承
+> interface Person {
+>     String getName();
+>     default void run() { //default定义的若子类没有复写可以默认
+>         System.out.println(getName() + " run");
+>     }
+> }
+> ```
+>
+> ***用具体的子类去实例化对象,但是引用的话用的是向上转型的父类或者接口***
+>
+> 
+
+### 静态字段和静态方法
+
+> ```java
+> class person{
+>     public string name;
+>     public static int number; //静态字段,所有实例共享,修改则都修改
+>     public static void setNumber(int value) {//静态方法不能访问实例的字段,只能访问静态字段
+>         number = value;
+>     }
+> }
+> //一般利用类名来引用静态字段
+> person.number;
+> 
+> ```
+>
+> 
+
+### 匿名对象
+
+> 
+
+
+
+### 包
+
+> 解决命名冲突而设计
+
+### 常用api
+
+
+
+### 作用域
+
+> 定义 为`public`的calss可以被其他类访问
+
+## IDEA
+
+### 快捷键
+
+> 向下复制一行:`ctrl D`
+>
+> 删除一行:`ctrl y`
+>
+> 提示`ctrl space`
+>
+> 自动修复导入包`alt enter`
+>
+> 格式化代码`ctrl alt l`
+>
+> 单行注释:`ctrl /`
+>
+> 多行注释:`ctrl shift /`
+>
+> 移动当前行:`alt shift 上/下`
+>
+> main函数:`psvm`
+>
+> out:`sout`
+>
+> arraylist遍历:`list.fori`
+>
+> 
+
+### Arraylist
+
+> 基本类型 ---> 包装类
+>
+> 
+
+### 字符串
+
+>`==`对于基本类型来说是数值比较,对于引用类型来说是地址的比较
+
+#### 字符串常量池
+
+> 字符串常量池位于堆中:***字节数组的地址位于池中,字符串对象中用的是也是此地址***
